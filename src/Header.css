@@ -9,6 +9,7 @@
   width: 100%;
   align-items: center;
   z-index: 999;
+  background-color: white;
 }
 
 .header__left {
