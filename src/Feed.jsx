@@ -8,6 +8,7 @@ import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
 import InputOption from "./InputOption";
 import Post from "./Post";
 import { db } from "./firebase.js";
+import FlipMove from "react-flip-move";
 
 import {
   addDoc,
@@ -17,10 +18,13 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 function Feed() {
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
+
+  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     const dbInstance = collection(db, "posts");
@@ -33,7 +37,6 @@ function Feed() {
           return { ...data.data(), id: data.id };
         })
       );
-      console.log(posts[0]);
     };
     getDocument();
   }, [input]);
@@ -42,10 +45,10 @@ function Feed() {
     e.preventDefault();
 
     const data = {
-      name: "Ojash Gurung",
-      description: "This is test",
+      name: user?.displayName,
+      description: user?.email,
       message: input,
-      photoUrl: "",
+      photoUrl: user?.photoUrl || "",
       timestamp: serverTimestamp(),
     };
     try {
@@ -86,15 +89,17 @@ function Feed() {
         </div>
       </div>
       {/* Posts */}
-      {posts.map(({ id, name, description, message, photoUrl }) => (
-        <Post
-          key={id}
-          name={name}
-          description={description}
-          message={message}
-          photoUrl={photoUrl}
-        />
-      ))}
+      <FlipMove>
+        {posts.map(({ id, name, description, message, photoUrl }) => (
+          <Post
+            key={id}
+            name={name}
+            description={description}
+            message={message}
+            photoUrl={photoUrl}
+          />
+        ))}
+      </FlipMove>
     </div>
   );
 }
